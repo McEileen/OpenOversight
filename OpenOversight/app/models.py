@@ -70,6 +70,8 @@ class Officer(db.Model):
         backref=db.backref('officers', lazy=True))
     notes = db.relationship('Note', back_populates='officer', order_by='Note.date_created')
 
+    __table_args__ = (UniqueConstraint('first_name', 'middle_initial', 'last_name', 'suffix'), )
+
     def full_name(self):
         if self.middle_initial:
             if self.suffix:
