@@ -682,6 +682,9 @@ def download_incidents_csv(department_id):
 def all_data():
     departments = Department.query.all()
     return render_template('all_depts.html', departments=departments)
+
+@main.route('/submit_officer_images/officer/<int:officer_id>', methods=['GET', 'POST'])
+@login_required
 @ac_or_admin_required
 def submit_officer_images(officer_id):
     officer = Officer.query.get_or_404(officer_id)

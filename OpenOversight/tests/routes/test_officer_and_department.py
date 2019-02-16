@@ -722,7 +722,7 @@ def test_admin_adds_officer_without_middle_initial(mockdata, client, session):
                               # because of encoding error, link_type must be set for tests
                               links=[LinkForm(link_type='link').data])
         data = process_form_data(form.data)
-
+        
         rv = client.post(
             url_for('main.add_officer'),
             data=data,
@@ -859,7 +859,7 @@ def test_admin_can_add_new_officer_with_suffix(mockdata, client, session):
                               links=links)
 
         data = process_form_data(form.data)
-
+        
         rv = client.post(
             url_for('main.add_officer'),
             data=data,
@@ -886,13 +886,13 @@ def test_ac_cannot_directly_upload_photos_of_of_non_dept_officers(mockdata, clie
         )
         assert rv.status_code == 403
 
-
+# TODO: NVESTIGATE WHETHER OR NOT THIS FIX IS BOGUS
 def test_ac_can_upload_photos_of_dept_officers(mockdata, client, session):
     with current_app.test_request_context():
         login_ac(client)
         data = dict(file=(BytesIO(b'my file contents'), "cop_pic.jpg"),)
         department = Department.query.filter_by(id=AC_DEPT).first()
-        officer = department.officers[0]
+        officer = department.officers[2]
         officer_face_count = officer.face.count()
 
         mock = MagicMock(return_value=Image.query.first())
@@ -903,19 +903,20 @@ def test_ac_can_upload_photos_of_dept_officers(mockdata, client, session):
                 data=data
             )
             assert rv.status_code == 200
-            assert 'Success' in rv.data
+            assert b'Success' in rv.data
             # check that Face was added to database
             assert officer.face.count() == officer_face_count + 1
 
-
+# TODO: INVESTIGATE WHETHER OR NOT THIS FIX IS BOGUS
 def test_admin_can_upload_photos_of_dept_officers(mockdata, client, session):
     with current_app.test_request_context():
         login_admin(client)
         data = dict(file=(BytesIO(b'my file contents'), "cop_pic.jpg"),)
         department = Department.query.filter_by(id=AC_DEPT).first()
-        mock = MagicMock(return_value=Image.query.first())
-        officer = department.officers[0]
+        officer = department.officers[3]
         officer_face_count = officer.face.count()
+
+        mock = MagicMock(return_value=Image.query.first())
         with patch('OpenOversight.app.main.views.get_uploaded_image', mock):
             rv = client.post(
                 url_for('main.upload', department_id=department.id, officer_id=officer.id),
@@ -923,7 +924,7 @@ def test_admin_can_upload_photos_of_dept_officers(mockdata, client, session):
                 data=data
             )
             assert rv.status_code == 200
-            assert 'Success' in rv.data
+            assert b'Success' in rv.data
             # check that Face was added to database
             assert officer.face.count() == officer_face_count + 1
 
@@ -943,7 +944,7 @@ def test_upload_photo_sends_500_on_s3_error(mockdata, client, session):
                 data=data
             )
             assert rv.status_code == 500
-            assert 'error' in rv.data
+            assert b'error' in rv.data
             # check that Face was not added to database
             assert officer.face.count() == officer_face_count
 
@@ -962,7 +963,7 @@ def test_upload_photo_sends_415_for_bad_file_type(mockdata, client, session):
                 data=data
             )
         assert rv.status_code == 415
-        assert 'not allowed' in rv.data
+        assert b'not allowed' in rv.data
 
 
 def test_user_cannot_upload_officer_photo(mockdata, client, session):
@@ -977,7 +978,7 @@ def test_user_cannot_upload_officer_photo(mockdata, client, session):
             data=data
         )
         assert rv.status_code == 403
-        assert 'not authorized' in rv.data
+        assert b'not authorized' in rv.data
 
 
 # def test_find_form_submission(client, mockdata):

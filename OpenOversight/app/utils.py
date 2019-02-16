@@ -432,9 +432,9 @@ def get_uploaded_image(image, crop_data=None, department_id=None):
     safe_local_path = os.path.join(tmpdir, filename)
 
     if crop_data:
-        urllib.urlretrieve(image.filepath, safe_local_path)
+        urlretrieve(image.filepath, safe_local_path)
     else:
-        with open(safe_local_path, 'w') as tmp:
+        with open(safe_local_path, 'wb') as tmp:
             tmp.write(image_data)
             os.umask(SAVED_UMASK)
 
@@ -456,7 +456,7 @@ def get_uploaded_image(image, crop_data=None, department_id=None):
         pimage.thumbnail(SIZE)
         pimage.save(fp=safe_local_path)
 
-    file = open(safe_local_path)
+    file = open(safe_local_path, 'rb')
 
     # See if there is a matching photo already in the db
     hash_img = compute_hash(file.read())
