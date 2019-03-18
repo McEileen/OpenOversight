@@ -5,7 +5,7 @@ from flask.views import MethodView
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import auth
-from ..models import User, db
+from ..models import User, Department, db
 from ..email import send_email
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm, ChangeDefaultDepartmentForm, \
@@ -205,6 +205,26 @@ def change_dept():
         return redirect(url_for('main.index'))
     return render_template('auth/change_dept_pref.html', form=form)
 
+
+class DepartmentAPI(MethodView):
+    # TODO: implement the ac capability for this
+    decorators = [admin_required]
+
+    def get(self, department_id):
+        # isolate the last part of the url
+        end_of_url = request.url.split('/')[-1].split('?')[0]
+
+        if department_id is None:
+            departments = Department.query.order_by(Department.name)
+            return render_template('auth/departments.html', objects=departments)
+
+
+department_view = DepartmentAPI.as_view('department_api')
+auth.add_url_rule(
+    '/departments/',
+    defaults={'department_id': None},
+    view_func=department_view,
+    methods=['GET'])
 
 class UserAPI(MethodView):
     decorators = [admin_required]

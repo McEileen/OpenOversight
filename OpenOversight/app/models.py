@@ -32,9 +32,10 @@ class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), index=True, unique=True, nullable=False)
     short_name = db.Column(db.String(100), unique=False, nullable=False)
+    is_active =  db.Column(db.Boolean, default=True)
 
     def __repr__(self):
-        return '<Department ID {}: {}>'.format(self.id, self.name)
+        return '<Department ID {}: {}>'.format(self.id, self.name, self.is_active)
 
 
 class Note(db.Model):

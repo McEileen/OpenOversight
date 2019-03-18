@@ -8,7 +8,7 @@ from OpenOversight.app.models import (Officer, Assignment, Face, Image, Unit,
 
 def test_department_repr(mockdata):
     department = Department.query.first()
-    assert department.__repr__() == '<Department ID {}: {}>'.format(department.id, department.name)
+    assert department.__repr__() == '<Department ID {}: {}>'.format(department.id, department.name, department.is_active)
 
 
 def test_officer_repr(mockdata):
