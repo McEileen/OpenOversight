@@ -214,9 +214,16 @@ class DepartmentAPI(MethodView):
         # isolate the last part of the url
         end_of_url = request.url.split('/')[-1].split('?')[0]
 
+        def find_area_coords(department_id):
+            area_coords = db.session.query(Department, User).filter(department_id == User.ac_department_id).all()
+            for ac in area_coords:
+                return {"id": ac[1].id, "username": ac[1].username} 
+
         if department_id is None:
-            departments = Department.query.order_by(Department.name)
-            return render_template('auth/departments.html', objects=departments)
+            departments = Department.query.order_by(Department.name).all()
+            # import pdb; pdb.set_trace()
+            # area_coordinators = db.session.query(Department, User).filter(Department.id == User.ac_department_id).all()
+            return render_template('auth/departments.html', departments=departments, find_area_coords=find_area_coords)
 
 
 department_view = DepartmentAPI.as_view('department_api')

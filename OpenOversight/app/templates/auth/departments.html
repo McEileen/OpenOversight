@@ -16,10 +16,10 @@
 					<th>Status</th>
 					<th>Area Coordinators?</th>
 				</tr>
-				{% for department in objects.items %}
+				{% for department in departments %}
 				<tr id="department-{{department.id}}">
 					<td>
-						<a href="{{department.id}}"><strong>{{ department.username }}</strong></a>
+						<a href="{{department.id}}"><strong>{{ department.name }}</strong></a>
 						<br />
 						<div class="row-actions">
 							<span class="edit"><a href="{{department.id}}">Edit</a> | </span>
@@ -38,7 +38,7 @@
 							Inactive
 						{% endif %}
 					</td>
-					<td>PLACEHOLDER: will list departments ACs here</td>
+					<td><a href="/auth/users/{{find_area_coords(department.id)['id']}}">{{ find_area_coords(department.id)['username']}}</a></td>
 				</tr>
 				{% endfor %}
 			</table>
